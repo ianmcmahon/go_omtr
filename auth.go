@@ -1,23 +1,21 @@
-package omtr 
+package omtr
 
 import (
+	"crypto/md5"
+	"crypto/sha1"
+	"encoding/base64"
 	"fmt"
 	"io"
 	"time"
-	"encoding/base64"
-	"crypto/sha1"
-	"crypto/md5"
 )
 
-
 type OmnitureClient struct {
-	username		string
-	shared_secret	string
+	username      string
+	shared_secret string
 }
 
-
 func New(username, shared_secret string) *OmnitureClient {
-	omcl := &OmnitureClient{ username, shared_secret }
+	omcl := &OmnitureClient{username, shared_secret}
 
 	return omcl
 }

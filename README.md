@@ -35,10 +35,8 @@ report_id, err := om_client.QueueReport(report_query)
 data, err := om_client.GetReport(report_id)
 
 // or, use the async Report() method, which takes a callback:
-reportId, err := om_client.Report(report_query, func (data string) { fmt.Printf("Received data: %s\n", data) })
+reportId, err := om_client.Report(report_query, func (data *ReportResponse, err error) { fmt.Printf("Received data: %s\n", data) })
 
-// or the string version, of course:
-reportId, err := om_client.ReportString(report_query_string, func (data string) { fmt.Printf("Received data: %s\n", data) })
 
 
 
