@@ -12,6 +12,21 @@ func OmClient() *OmnitureClient {
 	return New(os.Getenv("OM_USERNAME"), os.Getenv("OM_SECRET"))
 }
 
+func SampleQuery() *ReportQuery {
+	return &ReportQuery{
+		ReportDesc: &ReportDescription{
+			ReportSuiteID: "cnn-adbp-domestic",
+			DateGranularity: "day",
+			Date: "2014-05-02",
+			Metrics: []*Metric{
+				&Metric{"pageviews"},
+				&Metric{"event32"},
+				&Metric{"event1"},
+			},
+		},
+	}
+}
+
 func TestJsonNumberAsInt(t *testing.T) {
 	var qr queueReport_response
 	raw := `{"reportID": 42}`
@@ -36,9 +51,7 @@ func TestJsonGetError(t *testing.T) {
 func TestQueueReport(t *testing.T) {
 	omcl := OmClient()
 
-	test_rept := "{\"reportDescription\":{\"reportSuiteID\":\"cnn-adbp-domestic\", \"dateFrom\":\"2014-04-20\", \"dateTo\":\"2014-04-21\", \"dateGranularity\":\"hour\", \"metrics\":[{\"id\":\"event32\"},{\"id\":\"event1\"},{\"id\":\"visitorsHourly\"},{\"id\":\"pageviews\"} ], \"currentData\":\"true\"} }"
-
-	resp, err := omcl.QueueReport(test_rept)
+	resp, err := omcl.QueueReport(SampleQuery())
 	if err != nil { t.Error(err) }
 
 	fmt.Printf("response: %d\n", resp)
@@ -47,11 +60,9 @@ func TestQueueReport(t *testing.T) {
 func TestReport(t *testing.T) {
 	omcl := OmClient()
 
-	test_rept := "{\"reportDescription\":{\"reportSuiteID\":\"cnn-adbp-domestic\", \"dateFrom\":\"2014-04-20\", \"dateTo\":\"2014-04-21\", \"dateGranularity\":\"hour\", \"metrics\":[{\"id\":\"event32\"},{\"id\":\"event1\"},{\"id\":\"visitorsHourly\"},{\"id\":\"pageviews\"} ], \"currentData\":\"true\"} }"
-
 	c := make(chan string, 2)
 
-	reportId, err := omcl.Report(test_rept, func (data string) { c <- data })
+	reportId, err := omcl.Report(SampleQuery(), func (data string) { c <- data })
 	if err != nil { t.Error(err) }
 	fmt.Printf("Submitted report, reportId is %d\n", reportId)
 

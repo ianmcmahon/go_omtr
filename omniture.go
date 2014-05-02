@@ -10,21 +10,6 @@ import (
 )
 
 
-type queueReport_response struct {
-	ReportID 		Number		`json:"reportID"`		
-}
-
-type getError struct {
-	ErrorName			string 		`json:"error"`
-	ErrorDescription	string 		`json:"error_description"`
-	ErrorUri 			string 		`json:"error_uri"`
-}
-
-// bind an Error() method to getError type makes it fulfill the error interface
-func (e getError) Error() string {
-	return e.ErrorDescription
-}
-
 
 // returns status code, body as []byte, error
 func (omcl *OmnitureClient) om_request(method, data string) (int, []byte, error) {
@@ -46,9 +31,16 @@ func (omcl *OmnitureClient) om_request(method, data string) (int, []byte, error)
 	return resp.StatusCode, body, nil
 }
 
+func (omcl *OmnitureClient) QueueReport(query *ReportQuery) (int64, error) {
+	bytes, err := json.Marshal(query)
+	if err != nil { return -1, err }
+	fmt.Printf("DEBUG: Marshalled report query to: %s\n", string(bytes))
+	return omcl.QueueReportString(string(bytes))
+}
+
 // returns a report id which can be used at some point in the future to retrieve the report
-func (omcl *OmnitureClient) QueueReport(report string)  (int64, error) {
-	status, b, err := omcl.om_request("Report.Queue", report)
+func (omcl *OmnitureClient) QueueReportString(query string)  (int64, error) {
+	status, b, err := omcl.om_request("Report.Queue", query)
 
 	fmt.Printf("DEBUG: got back: %d, %s\n", status, b)
 
@@ -84,8 +76,17 @@ func (omcl *OmnitureClient) GetReport(reportId int64)  ([]byte, error) {
 	Takes a report definition and a callback which will be called once the report has successfully been retrieved.
 	Returns the reportId of the queued report or error
 */
-func (omcl *OmnitureClient) Report(report string, success_callback func (string)) (int64, error) {
-	rid, err := omcl.QueueReport(report)
+func (omcl *OmnitureClient) Report(query *ReportQuery, success_callback func (string)) (int64, error) {
+	rid, err := omcl.QueueReport(query)
+	if err != nil { return -1, err }
+
+	go omcl.wait_for_report_then_call(rid, success_callback)
+
+	return rid, nil
+}
+
+func (omcl *OmnitureClient) ReportString(query string, success_callback func (string)) (int64, error) {
+	rid, err := omcl.QueueReportString(query)
 	if err != nil { return -1, err }
 
 	go omcl.wait_for_report_then_call(rid, success_callback)
