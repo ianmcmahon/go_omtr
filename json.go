@@ -38,10 +38,10 @@ const (
 )
 
 type ReportQuery struct {
-	ReportDesc *ReportDescription `json:"reportDescription"`
+	ReportDescription *Description `json:"reportDescription"`
 }
 
-type ReportDescription struct {
+type Description struct {
 	ReportSuiteID    string     `json:"reportSuiteID"`
 	Date             string     `json:"date,omitempty"`
 	DateFrom         string     `json:"dateFrom,omitempty"`
@@ -133,8 +133,6 @@ type DataPath struct {
 
 type OmtrInt int64
 type OmtrFloat float64
-
-//var _ = json.Unmarshaler(new(Number))
 
 func (n *OmtrInt) UnmarshalJSON(data []byte) error {
 	var num json.Number

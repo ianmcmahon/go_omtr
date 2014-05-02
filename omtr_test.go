@@ -14,7 +14,7 @@ func OmClient() *OmnitureClient {
 
 func SampleQuery() *ReportQuery {
 	return &ReportQuery{
-		ReportDesc: &ReportDescription{
+		ReportDescription: &Description{
 			ReportSuiteID:   "cnn-adbp-domestic",
 			DateGranularity: "day",
 			Date:            "2014-05-02",
