@@ -19,7 +19,9 @@ func (omcl *OmnitureClient) QueueReport(query *ReportQuery) (int64, error) {
 // takes a query string (json) and returns a reportId which can be used to fetch the report in the future
 func (omcl *OmnitureClient) QueueReportRaw(query string) (int64, error) {
 	_, b, err := omcl.om_request("Report.Queue", query)
-	if err != nil { return -1, err }
+	if err != nil {
+		return -1, err
+	}
 
 	response := queueReport_response{}
 
@@ -60,6 +62,8 @@ func (omcl *OmnitureClient) GetReport(reportId int64) (*ReportResponse, error) {
 	resp := &ReportResponse{}
 
 	err = json.Unmarshal(bytes, resp)
+
+	resp.TimeRetrieved = time.Now()
 
 	return resp, err
 }

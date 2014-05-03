@@ -31,7 +31,6 @@ func (q *ReportQuery) Granularity(g string) *ReportQuery {
 	return q
 }
 
-
 // returns status code, body as []byte, error
 func (omcl *OmnitureClient) om_request(method, data string) (int, []byte, error) {
 	endpoint := "https://api.omniture.com/admin/1.4/rest/?method=%s"
@@ -57,5 +56,3 @@ func (omcl *OmnitureClient) om_request(method, data string) (int, []byte, error)
 
 	return resp.StatusCode, body, nil
 }
-
-

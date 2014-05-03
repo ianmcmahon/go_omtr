@@ -2,6 +2,7 @@ package omtr
 
 import (
 	"encoding/json"
+	"time"
 )
 
 type Locale string
@@ -88,9 +89,10 @@ type Segment struct {
 }
 
 type ReportResponse struct {
-	WaitSeconds OmtrFloat `json:"waitSeconds"`
-	RunSeconds  OmtrFloat `json:"runSeconds"`
-	Report      *Report   `json:"report"`
+	WaitSeconds   OmtrFloat `json:"waitSeconds"`
+	RunSeconds    OmtrFloat `json:"runSeconds"`
+	Report        *Report   `json:"report"`
+	TimeRetrieved time.Time
 }
 
 type Report struct {
