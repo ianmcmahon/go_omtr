@@ -26,6 +26,11 @@ func (q *ReportQuery) AddMetric(m string) *ReportQuery {
 	return q
 }
 
+func (q *ReportQuery) Granularity(g string) *ReportQuery {
+	q.ReportDescription.DateGranularity = g
+	return q
+}
+
 
 // returns status code, body as []byte, error
 func (omcl *OmnitureClient) om_request(method, data string) (int, []byte, error) {

@@ -12,16 +12,14 @@ func (omcl *OmnitureClient) QueueReport(query *ReportQuery) (int64, error) {
 	if err != nil {
 		return -1, err
 	}
-	fmt.Printf("DEBUG: Marshalled report query to: %s\n", string(bytes))
 
 	return omcl.QueueReportRaw(string(bytes))
 }
 
 // takes a query string (json) and returns a reportId which can be used to fetch the report in the future
 func (omcl *OmnitureClient) QueueReportRaw(query string) (int64, error) {
-	status, b, err := omcl.om_request("Report.Queue", query)
-
-	fmt.Printf("DEBUG: got back: %d, %s\n", status, b)
+	_, b, err := omcl.om_request("Report.Queue", query)
+	if err != nil { return -1, err }
 
 	response := queueReport_response{}
 
@@ -29,8 +27,6 @@ func (omcl *OmnitureClient) QueueReportRaw(query string) (int64, error) {
 	if err != nil {
 		return -1, err
 	}
-
-	fmt.Printf("DEBUG: unmarshaled: %v\n", response)
 
 	return int64(response.ReportID), nil
 }
@@ -51,8 +47,6 @@ func (omcl *OmnitureClient) GetReportRaw(reportId int64) ([]byte, error) {
 		}
 		return nil, ge
 	}
-
-	fmt.Printf("DEBUG: got back: %d, %s\n", status, response)
 
 	return response, err
 }
