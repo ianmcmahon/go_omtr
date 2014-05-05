@@ -5,6 +5,11 @@ import (
 	"io/ioutil"
 	"net/http"
 	"strings"
+	"time"
+)
+
+const (
+	date_format	string = "2006-01-02"
 )
 
 // construct a Report Query for a reportsuite
@@ -28,6 +33,21 @@ func (q *ReportQuery) AddMetric(m string) *ReportQuery {
 
 func (q *ReportQuery) Granularity(g string) *ReportQuery {
 	q.ReportDescription.DateGranularity = g
+	return q
+}
+
+func (q *ReportQuery) Date(d time.Time) *ReportQuery {
+	q.ReportDescription.Date = d.Format(date_format)
+	return q
+}
+
+func (q *ReportQuery) DateFrom(d time.Time) *ReportQuery {
+	q.ReportDescription.DateFrom = d.Format(date_format)
+	return q
+}
+
+func (q *ReportQuery) DateTo(d time.Time) *ReportQuery {
+	q.ReportDescription.DateTo = d.Format(date_format)
 	return q
 }
 

@@ -133,6 +133,11 @@ type DataPath struct {
 	Url  string `json:"url"`
 }
 
+func (d *Data) DayOfWeek() int {
+	date := time.Date(d.Year, time.Month(d.Month), d.Day, d.Hour, 0, 0, 0, time.UTC)
+	return int(date.Weekday())
+}
+
 type OmtrInt int64
 type OmtrFloat float64
 

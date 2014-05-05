@@ -16,11 +16,26 @@ func (omcl *OmnitureClient) QueueReport(query *ReportQuery) (int64, error) {
 	return omcl.QueueReportRaw(string(bytes))
 }
 
+func format_error_response(resp []byte) error {
+	var ge getError
+	err := json.Unmarshal(resp, &ge)
+	if err != nil {
+		return fmt.Errorf("Report.Get returned '%s'; error attempting to unmarshal to error structure: %v", string(resp), err)
+	}
+	return ge
+}
+
 // takes a query string (json) and returns a reportId which can be used to fetch the report in the future
 func (omcl *OmnitureClient) QueueReportRaw(query string) (int64, error) {
-	_, b, err := omcl.om_request("Report.Queue", query)
+	fmt.Printf("DEBUG: query: %s\n", query)
+	status, b, err := omcl.om_request("Report.Queue", query)
+
 	if err != nil {
 		return -1, err
+	}
+
+	if status == 400 {
+		return -1, format_error_response(b)
 	}
 
 	response := queueReport_response{}
@@ -42,12 +57,7 @@ func (omcl *OmnitureClient) GetReportRaw(reportId int64) ([]byte, error) {
 
 	// the api returns 400 if the report is not yet ready; in this case I'll parse the response as an error and return it
 	if status == 400 {
-		var ge getError
-		err := json.Unmarshal(response, &ge)
-		if err != nil {
-			return nil, fmt.Errorf("Report.Get returned '%s'; error attempting to unmarshal to error structure: %v", string(response), err)
-		}
-		return nil, ge
+		return nil, format_error_response(response)
 	}
 
 	return response, err
